@@ -8,6 +8,7 @@ package team.six.mastermind.server;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import team.six.mastermind.client.MMClient;
 import team.six.mastermind.common.MMPacket;
 
 /**
@@ -34,6 +35,9 @@ public class MMServer {
         System.out.println("Server initialized!");
         System.out.println();
         
+        boolean once = true;
+        
+        
         for (;;) {
             
             
@@ -49,6 +53,9 @@ public class MMServer {
                     System.out.println("Client added: " + client.getInetAddress());
                     System.out.println("Clients connected: " + clientSockets.size());
                     System.out.println();
+                }
+                else{
+                    break;
                 }
             }
             
@@ -70,6 +77,10 @@ public class MMServer {
             
             
             // clntSock.close();
+            if(once){
+                MMClient clienttest = new MMClient(new Socket("192.168.0.176", 50000));
+                once = false;
+            }
         }
     }
 }

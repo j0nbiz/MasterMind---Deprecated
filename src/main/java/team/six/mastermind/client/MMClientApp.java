@@ -11,8 +11,9 @@ import javafx.stage.Stage;
 import static javafx.application.Application.launch;
 
 
-public class MMClientApp extends Application {
+public class MMClientApp /*extends Application*/ {
 
+    /*
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
@@ -23,7 +24,7 @@ public class MMClientApp extends Application {
         stage.setTitle("JavaFX and Maven");
         stage.setScene(scene);
         stage.show();
-    }
+    }*/
 
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
