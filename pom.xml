@@ -11,12 +11,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mainClass>team.six.mastermind.MainApp</mainClass>
+        <mainClass>team.six.mastermind.server.MMServerApp</mainClass>
+        <mainClass>team.six.mastermind.client.MMClientApp</mainClass>
     </properties>
 
     <organization>
-        <!-- Used as the 'Vendor' for JNLP generation -->
-        <name>Your Organisation</name>
+        <name>Dawson College</name>
     </organization>
 
     <build>

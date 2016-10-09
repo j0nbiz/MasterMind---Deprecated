@@ -1,5 +1,7 @@
 package team.six.mastermind.client;
 
+import java.io.IOException;
+import java.net.Socket;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
@@ -31,8 +33,9 @@ public class MMClientApp extends Application {
      *
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        launch(args);
+    public static void main(String[] args) throws IOException {
+        MMClient client = new MMClient(new Socket("192.168.0.176", 50000));
+        client.sendStartReq();
     }
 
 }

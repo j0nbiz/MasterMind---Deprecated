@@ -23,14 +23,20 @@ public class MMServer {
     private byte[] incPackets = new byte[BUFFSIZE];
     private int incPacketsSize;
 
-    public MMServer(ServerSocket serversock) {
+    public MMServer(ServerSocket serversock) throws IOException {
         this.serverSocket = serversock;
         
         // Automaticaly start the server
+        this.start();
     }
 
     public void start() throws IOException {
+        System.out.println("Server initialized!");
+        System.out.println();
+        
         for (;;) {
+            
+            
             // Check for potential new connections
             Socket client = serverSocket.accept();
             
@@ -40,9 +46,13 @@ public class MMServer {
                 if(client.getInputStream().read() == 0x00000000){
                     clientSockets.add(client);
                     // TODO: Send a response
+                    System.out.println("Client added: " + client.getInetAddress());
+                    System.out.println("Clients connected: " + clientSockets.size());
+                    System.out.println();
                 }
             }
             
+            /*
             // Act upon all current connections
             for(Socket conn: clientSockets){
                 
@@ -54,7 +64,7 @@ public class MMServer {
                 // Interpret message
                 
                 // Reply message
-            }
+            }*/
             
             // Check for disconnections
             
