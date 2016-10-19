@@ -34,6 +34,10 @@ public class MMClient {
         // Send connection request
         out.write(0x00000000);
         
+        // mmServer.close();
+    }
+    
+    public void disconnect() throws IOException {
         mmServer.close();
     }
 }

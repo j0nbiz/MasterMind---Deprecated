@@ -8,6 +8,8 @@ package team.six.mastermind.server;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import team.six.mastermind.client.MMClient;
 import team.six.mastermind.common.MMPacket;
 
@@ -16,13 +18,14 @@ import team.six.mastermind.common.MMPacket;
  * @author 1437203
  */
 public class MMServer {
-
-    private ServerSocket serverSocket;
-    private List<Socket> clientSockets;
+    private final Logger log = LoggerFactory.getLogger(getClass().getName());
     
-    private static final int BUFFSIZE = 32;
-    private byte[] incPackets = new byte[BUFFSIZE];
-    private int incPacketsSize;
+    private ServerSocket serverSocket;
+    
+    private static final int BUFFSIZE = 1;
+    private byte[] byteBuffer = new byte[BUFFSIZE];
+    private int bytesRcvd;
+    private int totalBytesRcvd = 0;
 
     public MMServer(ServerSocket serversock) throws IOException {
         this.serverSocket = serversock;
@@ -32,55 +35,44 @@ public class MMServer {
     }
 
     public void start() throws IOException {
-        System.out.println("Server initialized!");
-        System.out.println();
+        log.info("Server initialized!");
+        log.info("");
         
         boolean once = true;
         
+        // TESTING: making temp client to test server interaction in one runtime
+        MMClient clienttest = new MMClient(new Socket("localhost", 50000));
+        
+        // Block here until connection is made with client
+        Socket client = serverSocket.accept();
         
         for (;;) {
+            // TESTING: sending req
+            clienttest.sendStartReq();
             
+            while(totalBytesRcvd < byteBuffer.length){
+                // Check for client disconnection and throw exception
+                if((bytesRcvd = client.getInputStream().read(byteBuffer, totalBytesRcvd, byteBuffer.length - totalBytesRcvd)) == -1) {
+                    throw new SocketException("Connection was interrupted!");
+                }
+                totalBytesRcvd += bytesRcvd;
+                
+                // TESTING
+                log.info("Got new packets:");
+                log.info(byteBuffer.toString());   
+            }
+            totalBytesRcvd = 0;
             
-            // Check for potential new connections
-            Socket client = serverSocket.accept();
+            clienttest.disconnect();
             
             // Check for new game request
-            while ((incPacketsSize = client.getInputStream().read(incPackets)) != -1) {
-                //Add new connection to list if requested
-                if(client.getInputStream().read() == 0x00000000){
-                    clientSockets.add(client);
-                    // TODO: Send a response
-                    System.out.println("Client added: " + client.getInetAddress());
-                    System.out.println("Clients connected: " + clientSockets.size());
-                    System.out.println();
-                }
-                else{
-                    break;
-                }
-            }
-            
-            /*
-            // Act upon all current connections
-            for(Socket conn: clientSockets){
-                
-                // Listen
-                while ((incPacketsSize = conn.getInputStream().read(incPackets)) != -1) {
-                    // Fill buffer
-                }
-                
-                // Interpret message
-                
-                // Reply message
-            }*/
-            
-            // Check for disconnections
             
             
-            // clntSock.close();
-            if(once){
-                MMClient clienttest = new MMClient(new Socket("192.168.0.176", 50000));
-                once = false;
-            }
+            // Check for client game interaction
+            
+            // Check for client disconnection
+
+            // TESTING: making client disconnecting
         }
     }
 }
