@@ -11,6 +11,7 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import team.six.mastermind.client.MMClient;
+import team.six.mastermind.common.MMGame;
 import team.six.mastermind.common.MMPacket;
 
 /**
@@ -22,7 +23,7 @@ public class MMServer {
     
     private ServerSocket serverSocket;
     
-    private static final int BUFFSIZE = 1;
+    private static final int BUFFSIZE = 4; // Packet holds 4 components
     private byte[] byteBuffer = new byte[BUFFSIZE];
     private int bytesRcvd;
     private int totalBytesRcvd = 0;
@@ -38,17 +39,22 @@ public class MMServer {
         log.info("Server initialized!");
         log.info("");
         
-        boolean once = true;
-        
         // TESTING: making temp client to test server interaction in one runtime
         MMClient clienttest = new MMClient(new Socket("localhost", 50000));
         
         // Block here until connection is made with client
         Socket client = serverSocket.accept();
         
+        // Create packet to interpret response
+        MMPacket packet = new MMPacket();
+        
+        int counter = 0;
+        
         for (;;) {
             // TESTING: sending req
+            clienttest.sendGuess(new MMPacket((byte) 5, (byte) 5, (byte) 5, (byte) 5));
             clienttest.sendStartReq();
+            clienttest.sendGuess(new MMPacket((byte) 2, (byte) 4, (byte) 6, (byte) 7));
             
             while(totalBytesRcvd < byteBuffer.length){
                 // Check for client disconnection and throw exception
@@ -57,22 +63,29 @@ public class MMServer {
                 }
                 totalBytesRcvd += bytesRcvd;
                 
+                // Fill current packet
+                packet.decode(byteBuffer);
+                
                 // TESTING
-                log.info("Got new packets:");
-                log.info(byteBuffer.toString());   
+                log.info("Got new packet:");
+                log.info("Components: " + packet.toString());
+                log.info("");
+                
+                // Check for new game request
+                if(packet.equals(new MMPacket((byte) 0, (byte) 0, (byte) 0, (byte) 0))){
+                    MMGame clientGame = new MMGame();
+                   
+                    log.info("Game created! (Answer = " + clientGame.getAnswer().toString() + ")");
+                    log.info(""); 
+                }
             }
             totalBytesRcvd = 0;
+            counter++;
             
-            clienttest.disconnect();
+            if(counter == 3){
+                clienttest.disconnect();
+            }
             
-            // Check for new game request
-            
-            
-            // Check for client game interaction
-            
-            // Check for client disconnection
-
-            // TESTING: making client disconnecting
         }
     }
 }

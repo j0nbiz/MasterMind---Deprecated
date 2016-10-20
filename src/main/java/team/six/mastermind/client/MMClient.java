@@ -1,43 +1,42 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package team.six.mastermind.client;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
+import team.six.mastermind.common.MMPacket;
 
 /**
  *
- * @author 1437203
+ * @author j0nbiz
  */
 public class MMClient {
+
     private Socket mmServer;
     OutputStream out;
-    
-    private static final int BUFFSIZE = 32;
-    private byte[] incPackets = new byte[BUFFSIZE];
-    private int incPacketsSize;
 
     public MMClient(Socket mmServer) throws IOException {
         this.mmServer = mmServer;
-        this.out = mmServer.getOutputStream();
+        this.out = mmServer.getOutputStream(); // Get target
     }
 
     public void sendStartReq() throws IOException {
-        OutputStream out = mmServer.getOutputStream();
-
-        // Send connection request
-        out.write(0x00000000);
-        
-        // mmServer.close();
+        // Using 0 in all fields as start game request
+        for(byte comp: new MMPacket((byte) 0, (byte) 0, (byte) 0, (byte) 0).getBytes()){
+            out.write(comp); // Send all packet components to server
+        }
     }
-    
+
+    public void sendGuess(MMPacket packet) throws IOException {
+        for(byte comp: packet.getBytes()){
+            out.write(comp); // Send all packet components to server
+        }
+    }
+
     public void disconnect() throws IOException {
-        mmServer.close();
+        mmServer.close(); // Close server connection
     }
 }
